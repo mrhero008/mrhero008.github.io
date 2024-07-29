@@ -103,6 +103,7 @@
                 }
                 if (String(card_number).length != 16 || !String(card_number).startsWith('9860')) {
                     document.querySelector('.error').textContent = 'Karta raqamda xatolik mavjud!'
+                    document.querySelector('.error').style.display = 'block'
                     return
                 }
                 const data = {
