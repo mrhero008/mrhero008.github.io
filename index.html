@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beruniy Olimpiadasi</title>
+    <style>
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: left;
+        }
+
+        h3 {
+            color: aliceblue !important;
+            margin-left: 20px;
+        }
+
+        label {
+            font-size: 20px;
+            margin-bottom: 0;
+            padding: 0;
+            font-weight: bolder;
+        }
+
+        input {
+            width: 250px !important;
+            height: 40px;
+            font-size: 18px;
+            margin-bottom: 20px;
+            padding: 0 10px;
+            border-radius: 10px;
+            outline: none;
+        }
+
+        select {
+            width: 240px !important;
+            height: 40px;
+            font-size: 18px;
+            margin-bottom: 20px;
+            padding: 0 10px;
+            border-radius: 10px;
+            outline: none;
+            border: 2px inset black;
+        }
+
+        option {
+            font-size: 18px;
+            padding: 0 10px;
+            margin-bottom: 20px;
+            padding: 0 10px;
+        }
+
+        body {
+            background-color: var(--tg-theme-bg-color) !important;
+        }
+
+        select:disabled {
+            background-color: #8e8e8e;
+            color: #424242;
+            border: 1px solid #ffffff;
+            cursor: not-allowed;
+        }
+
+        .form {
+            border: 1px solid #9c9c9c;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: #3f3f3f;
+            margin-top: 20px;
+        }
+    </style>
+    <link rel="stylesheet" href="./bootstrap.css">
+</head>
+
+<body>
+    <div class="container">
+        <h3>Beruniy Olimpiadasiga To'lov qilish</h3>
+        <div class="form">
+            <input type="number" id="card_number" class="form-control" minlength="16" maxlength="16"
+                placeholder="Karta raqamingiz">
+            <br>
+            <div class="alert alert-danger error" role="alert" style="display: none;"> </div>
+
+            <button id="register" class="btn btn-primary">To'lov qilish</button>
+        </div>
+        <script src="./telegram-web-app.js"></script>
+        <script src="./bootstrap.js"></script>
+        <script>
+            tg = window.Telegram.WebApp
+            tg.expand()
+
+            document.getElementById('register').addEventListener('click', function () {
+                document.querySelector('.error').textContent = ''
+                document.querySelector('.error').style.display = 'none'
+                const card_number = document.getElementById('card_number').value
+                if (!card_number) {
+                    document.querySelector('.error').textContent = 'Barcha maydonlarni to\'ldiring!'
+                    document.querySelector('.error').style.display = 'block'
+                    return
+                }
+                if (String(card_number).length != 16 || !String(card_number).startsWith('9860')) {
+                    document.querySelector('.error').textContent = 'Karta raqamda xatolik mavjud!'
+                    return
+                }
+                const data = {
+                    card_number: card_number,
+                }
+                tg.sendData(JSON.stringify(data))
+                tg.close()
+            })
+        </script>
+
+</body>
+
+</html>
