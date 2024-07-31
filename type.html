@@ -106,6 +106,7 @@
                     document.getElementById('time').value = data.get('time')
                     action = 'update'
                 } catch (e) {
+                    document.getElementById('delete').style.display = 'none'
                     action = 'set'
                 }
             }
