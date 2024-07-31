@@ -100,12 +100,12 @@
 
             window.onload = function () {
                 data = new URLSearchParams(window.location.search)
-                try {
+                if (!data.get('title')) {
                     document.getElementById('title').value = data.get('title')
                     document.getElementById('price').value = data.get('price')
                     document.getElementById('time').value = data.get('time')
                     action = 'update'
-                } catch (e) {
+                } else {
                     document.getElementById('delete').style.display = 'none'
                     action = 'set'
                 }
