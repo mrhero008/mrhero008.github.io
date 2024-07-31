@@ -100,7 +100,7 @@
 
             window.onload = function () {
                 data = new URLSearchParams(window.location.search)
-                if (!data.get('title')) {
+                if (data.get('title') != null) {
                     document.getElementById('title').value = data.get('title')
                     document.getElementById('price').value = data.get('price')
                     document.getElementById('time').value = data.get('time')
