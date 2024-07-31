@@ -130,7 +130,7 @@
                         action: action,
                         channel: data.get('channel'),
                     }
-                    console.log(ndata)
+                    console.log(JSON.stringify(data))
                     tg.sendData(JSON.stringify(data))
                     tg.close()
                 } else {
@@ -141,7 +141,7 @@
                         time: time,
                         action: action,
                     }
-                    console.log(ndata)
+                    console.log(JSON.stringify(ndata))
                     tg.sendData(JSON.stringify(ndata))
                     tg.close()
                 }
