@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SoftCoin</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <p id="balance">
+        SOFTCOINS: 0
+    </p>
+    <div class="center">
+        <div class="coin-back" id="button">
+            <div class="coin">S</div>
+        </div>
+    </div>
+    <p class="energy">200/200</p>
+
+
+    <script>
+        const setenrgy = 100
+        let energy = 100
+        let balance = 0
+        document.getElementsByClassName("energy")[0].innerText = energy + '/' + setenrgy
+        if (balance >= 1000 && balance < 1000000) {
+            if (String(balance/1000).split('.')[0] == 0) {
+                document.getElementById("balance").innerText = 'SOFTCOINS: ' + String(balance/1000).split('.')[0] + ' ming'
+            } else {
+                document.getElementById("balance").innerText = 'SOFTCOINS: ' + String(balance/1000).split('.')[0] + ',' + String(balance/1000).split('.')[1][0] + ' ming'
+            }
+        } else if (balance >= 1000000) {
+            if (String(balance/1000000).split('.')[0] == 0) {
+                document.getElementById("balance").innerText = 'SOFTCOINS: ' + String(balance/1000000).split('.')[0] + ' ming'
+            } else {
+                document.getElementById("balance").innerText = 'SOFTCOINS: ' + String(balance/1000000).split('.')[0] + ',' + String(balance/1000000).split('.')[1][0] + ' ming'
+            }
+            document.getElementById("balance").innerText = 'SOFTCOINS: ' + String(balance/1000000).split('.')[0] + ' mln'
+        } else {
+            document.getElementById("balance").innerText = 'SOFTCOINS: ' + balance
+        }
+        document.getElementById("button").onclick = function (event) {
+            if (energy <= 0) {
+                return
+            }
+            let x = event.clientX;
+            let y = event.clientY;
+            balance++
+            const small = document.createElement("div");
+            small.classList.add("small-coin-back");
+            const c = document.createElement("div");
+            c.classList.add("small-coin");
+            c.innerText = 'S'
+            small.appendChild(c);
+            document.getElementsByTagName("body")[0].appendChild(small);
+            small.style.left = x + 'px';
+            small.style.top = y + 'px';
+            for (let i = 0; i < 100; i++) {
+                setTimeout(function () {
+                    small.style.top = y - i * 3 + 'px';
+                    small.style.opacity = 1 - i / 100;
+                    if (i == 99) {
+                        small.remove();
+                    }
+                }, i * 10);
+            }
+            energy--
+            document.getElementsByClassName("energy")[0].innerText = energy + '/' + setenrgy
+            if (balance >= 1000 && balance < 1000000) {
+                if (String(balance/1000).split('.')[0] == 0) {
+                    document.getElementById("balance").innerText = 'SOFTCOINS: ' + String(balance/1000).split('.')[0] + ' ming'
+                } else {
+                    document.getElementById("balance").innerText = 'SOFTCOINS: ' + String(balance/1000).split('.')[0] + ',' + String(balance/1000).split('.')[1][0] + ' ming'
+                }
+            } else if (balance >= 1000000) {
+                if (String(balance/1000000).split('.')[0] == 0) {
+                    document.getElementById("balance").innerText = 'SOFTCOINS: ' + String(balance/1000000).split('.')[0] + ' ming'
+                } else {
+                    document.getElementById("balance").innerText = 'SOFTCOINS: ' + String(balance/1000000).split('.')[0] + ',' + String(balance/1000000).split('.')[1][0] + ' ming'
+                }
+                document.getElementById("balance").innerText = 'SOFTCOINS: ' + String(balance/1000000).split('.')[0] + ' mln'
+            } else {
+                document.getElementById("balance").innerText = 'SOFTCOINS: ' + balance
+            }
+
+        }
+
+        setInterval(function () {
+            if (energy > setenrgy - 3) {
+                energy += setenrgy - energy
+                document.getElementsByClassName("energy")[0].innerText = energy + '/' + setenrgy
+            }
+            if (energy < setenrgy) {
+                energy += 3
+                document.getElementsByClassName("energy")[0].innerText = energy + '/' + setenrgy
+            }
+        }, 2000)
+    </script>
+</body>
+
+</html>
