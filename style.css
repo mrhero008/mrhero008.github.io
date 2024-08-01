@@ -2,16 +2,16 @@
 
 
 .coin {
-    width: 3;
-    height: 300px;
+    width: 250px;
+    height: 250px;
     background-color: yellow;
     border-radius: 50%;
     transform: translate(3%, -1%);
-    font-size: 200px;
+    font-size: 170px;
     font-family: 'Boldstrom', sans-serif;
     color: rgb(208, 129, 2);
     text-align: center;
-    line-height: 290px;
+    line-height: 250px;
 }
 
 .coin:active {
@@ -19,8 +19,8 @@
 }
 
 .coin-back {
-    width: 304px;
-    height: 304px;
+    width: 254px;
+    height: 254px;
     background-color: rgb(255, 145, 0);
     border-radius: 50%;
     box-shadow: 0 0 40px 0.2px black;
