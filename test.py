@@ -5,7 +5,7 @@ app = Flask(__name__)
 
 @app.route('/softcoin')
 def index():
-    return render_template('softcoin.html')
+    return "<h1>Softcoins. Hello world</h1>"
 
 
 
