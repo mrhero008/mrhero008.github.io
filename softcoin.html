@@ -111,8 +111,8 @@
             } else {
                 document.getElementById("balance").innerText = balance
             }
-            setenrgy = 200
-            energy = 200
+            setenrgy = data.setenergy
+            energy = setenergy
             document.getElementsByClassName("energy")[0].innerText = energy + '/' + setenrgy
         })
         document.getElementById("button").onclick = function (event) {
