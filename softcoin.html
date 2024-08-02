@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SoftCoin</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../static/style.css">
 </head>
 
 <body>
@@ -25,7 +25,7 @@
         <span>Darajangiz oshdi</span>
     </div> -->
     <p class="energy">200/200</p>
-    <script src="supabase.js"></script>
+    <script src="../static/supabase.js"></script>
 
     <script>
         const url = 'https://zdelswetcocypedqkqwm.supabase.co'
@@ -84,6 +84,11 @@
             return data
         }
 
+        async function update_level(level) {
+            const data = await _supabase.from('users').update({ level: level }).eq('user_id', user_id)
+            return data
+        }
+
         let balance
         let setenrgy
         let energy
@@ -106,8 +111,8 @@
             } else {
                 document.getElementById("balance").innerText = balance
             }
-            setenrgy = data.setenergy
-            energy = data.setenergy
+            setenrgy = 200
+            energy = 200
             document.getElementsByClassName("energy")[0].innerText = energy + '/' + setenrgy
         })
         document.getElementById("button").onclick = function (event) {
@@ -181,6 +186,9 @@
                 }
                 setenrgy = current.energy
                 energy = current.energy
+                update_setenergy(setenrgy)
+                update_level(current.level)
+                
                 document.getElementsByClassName("energy")[0].innerText = energy + '/' + setenrgy
             }
 
