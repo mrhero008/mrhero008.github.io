@@ -159,7 +159,7 @@
                 document.getElementById("balance").innerText = balance
             }
             update_balance(balance)
-            console.log(level_up)
+            console.log(levels[String(balance)])
             if (String(balance) in level_up && levels[String(balance)].level != 1) {
                 const current = levels[String(balance)]
 
