@@ -6,25 +6,40 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SoftCoin</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/c361bc11c8.js" crossorigin="anonymous"></script>
 </head>
 
 <body>
-    <div class="balance">
-        <div class="icon-coin-back">
-            <div class="icon-coin">S</div>
+    <div id="home-tab">
+        <div class="level">
+            <p>Darajangiz: </p>
+            <p><img id="level" src="level1.png" height="100px" alt=""></p>
         </div>
-        <p id="balance">0</p>
+        <div class="balance">
+            <div class="icon-coin-back">
+                <div class="icon-coin">S</div>
+            </div>
+            <p id="balance">0</p>
+        </div>
+        <div class="center">
+            <div class="coin-back" id="button">
+                <div class="coin">S</div>
+            </div>
+        </div>
+        <p class="energy">100/100</p>
     </div>
-    <div class="center">
-        <div class="coin-back" id="button">
-            <div class="coin">S</div>
+    <div id="messages-tab">
+        <div class="message">
+            <div class="text"></div>
+
         </div>
     </div>
-    <!-- <div class="level-up">
-        <span class="plus">+</span>
-        <span>Darajangiz oshdi</span>
-    </div> -->
-    <p class="energy">100/100</p>
+    <div class="menu">
+        <i class="fa fa-home active" id="home"></i>
+        <i class='fas fa-comment-dots' id="messages"></i>
+    </div>
     <script src="supabase.js"></script>
 
     <script>
@@ -36,37 +51,37 @@
             1: {
                 level: 1,
                 energy: 100,
-                avatar: '../static/level1.png'
+                avatar: 'level1.png'
             },
             1000: {
                 level: 2,
                 energy: 200,
-                avatar: '../static/level2.png'
+                avatar: 'level2.png'
             },
             10000: {
                 level: 3,
                 energy: 300,
-                avatar: '../static/level3.png'
+                avatar: 'level3.png'
             },
             50000: {
                 level: 4,
                 energy: 400,
-                avatar: '../static/level4.png'
+                avatar: 'level4.png'
             },
             100000: {
                 level: 5,
                 energy: 500,
-                avatar: '../static/level5.png'
+                avatar: 'level5.png'
             },
             1000000: {
                 level: 6,
                 energy: 600,
-                avatar: '../static/level6.png'
+                avatar: 'level6.png'
             },
             10000000: {
                 level: 7,
                 energy: 700,
-                avatar: '../static/level7.png'
+                avatar: 'level7.png'
             }
         }
         const level_up = Object.keys(levels)
@@ -92,6 +107,7 @@
         let balance
         let setenrgy
         let energy
+        let level
 
         main().then(data => {
             balance = data.balance
@@ -113,7 +129,9 @@
             }
             setenrgy = data.setenergy
             energy = data.setenergy
-            document.getElementsByClassName("energy")[0].innerText = energy + '/' + setenrgy
+            level = data.level
+            document.getElementsByClassName("energy")[0].innerText = navigator.userAgent + energy + '/' + setenrgy
+            document.getElementById("level").src = levels[level_up[level - 1]].avatar
         })
         document.getElementById("button").onclick = function (event) {
             if (energy <= 0) {
@@ -186,6 +204,8 @@
                 }
                 setenergy = current.energy
                 energy = current.energy
+                level = current.level
+                document.getElementById("level").src = current.avatar
                 update_setenergy(current.energy)
                 update_level(current.level)
 
@@ -204,6 +224,23 @@
                 document.getElementsByClassName("energy")[0].innerText = energy + '/' + setenrgy
             }
         }, 2000)
+
+
+
+        document.getElementById('home').addEventListener('click', () => {
+            document.getElementById('home').classList.add('active')
+            document.getElementById('messages').classList.remove('active')
+            document.getElementById('home-tab').style.display = 'block'
+            document.getElementById('messages-tab').style.display = 'none'
+        })
+
+
+        document.getElementById('messages').addEventListener('click', () => {
+            document.getElementById('home').classList.remove('active')
+            document.getElementById('messages').classList.add('active')
+            document.getElementById('home-tab').style.display = 'none'
+            document.getElementById('messages-tab').style.display = 'block'
+        })
     </script>
 </body>
 
