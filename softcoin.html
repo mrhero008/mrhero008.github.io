@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SoftCoin</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../static/style.css">
 </head>
 
 <body>
@@ -25,7 +25,7 @@
         <span>Darajangiz oshdi</span>
     </div> -->
     <p class="energy">200/200</p>
-    <script src="supabase.js"></script>
+    <script src="../static/supabase.js"></script>
 
     <script>
         const url = 'https://zdelswetcocypedqkqwm.supabase.co'
@@ -78,31 +78,15 @@
             const data = await _supabase.from('users').update({ balance: balance }).eq('user_id', user_id)
             return data
         }
+
+        async function update_setenergy(setenrgy) {
+            const data = await _supabase.from('users').update({ setenergy: setenrgy }).eq('user_id', user_id)
+            return data
+        }
+
         let balance
         let setenrgy
         let energy
-        const level_up_div = document.createElement("div");
-        level_up_div.classList.add("level-up");
-        plus = document.createElement("span");
-        plus.classList.add("plus");
-        plus.innerText = '+'
-        level_up_div.appendChild(plus);
-        const sp = document.createElement("span");
-        sp.innerText = 'Darajangiz oshdi'
-        level_up_div.appendChild(sp);
-        document.getElementsByTagName("body")[0].appendChild(level_up_div);
-        level_up_div.style.top = '50%';
-        level_up_div.style.left = window.innerWidth / 2-130 + 'px';
-
-        for (let i = 0; i < 100; i += 2) {
-            setTimeout(function () {
-                level_up_div.style.top = window.innerHeight / 2 - i * 3 + 'px';
-                level_up_div.style.opacity = 1 - i / 100;
-                if (i == 99) {
-                    level_up_div.remove();
-                }
-            }, i * 10);
-        }
 
         main().then(data => {
             balance = data.balance
@@ -171,6 +155,8 @@
             }
             update_balance(balance)
             if (balance in level_up && levels[balance].level != 1) {
+                const current = levels[balance]
+                
                 const level_up_div = document.createElement("div");
                 level_up_div.classList.add("level-up");
                 plus = document.createElement("span");
@@ -181,9 +167,12 @@
                 sp.innerText = 'Darajangiz oshdi'
                 level_up_div.appendChild(sp);
                 document.getElementsByTagName("body")[0].appendChild(level_up_div);
-                for (let i = 0; i < 100; i++) {
+                level_up_div.style.top = '50%';
+                level_up_div.style.left = window.innerWidth / 2 - 130 + 'px';
+
+                for (let i = 0; i < 100; i += 2) {
                     setTimeout(function () {
-                        level_up_div.style.top = y - i * 3 + 'px';
+                        level_up_div.style.top = window.innerHeight / 2 - i * 3 + 'px';
                         level_up_div.style.opacity = 1 - i / 100;
                         if (i == 99) {
                             level_up_div.remove();
