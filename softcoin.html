@@ -160,8 +160,8 @@
             }
             update_balance(balance)
             console.log(level_up)
-            if (String(balance) in level_up && levels[balance].level != 1) {
-                const current = levels[balance]
+            if (String(balance) in level_up && levels[String(balance)].level != 1) {
+                const current = levels[String(balance)]
 
                 const level_up_div = document.createElement("div");
                 level_up_div.classList.add("level-up");
