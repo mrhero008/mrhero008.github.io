@@ -159,9 +159,9 @@
                 document.getElementById("balance").innerText = balance
             }
             update_balance(balance)
-            console.log(levels[String(balance)])
-            if (String(balance) in level_up && levels[String(balance)].level != 1) {
-                const current = levels[String(balance)]
+            console.log(levels[balance])
+            if (String(balance) in level_up && levels[balance].level != 1) {
+                const current = levels[balance]
 
                 const level_up_div = document.createElement("div");
                 level_up_div.classList.add("level-up");
