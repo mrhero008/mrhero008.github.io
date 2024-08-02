@@ -134,3 +134,24 @@ p {
     margin-bottom: 10px;
     padding-top: none !important;
 }
+
+.plus {
+    font-size: 30px;
+    text-align: center;
+    font-weight: bolder;
+    color: rgb(0, 201, 0);
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    transform: translate(-20px, 20px);
+}
+
+
+.level-up {
+    text-align: center;
+    font-size: 30px;
+    font-weight: bolder;
+    padding: 20px 0;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    left: 470px;
+    position: fixed;
+    color: rgb(66, 66, 255);
+}
