@@ -159,6 +159,7 @@
                 document.getElementById("balance").innerText = balance
             }
             update_balance(balance)
+            console.log(level_up)
             if (balance in level_up && levels[balance].level != 1) {
                 const current = levels[balance]
 
@@ -184,9 +185,9 @@
                         }
                     }, i * 10);
                 }
-                setenrgy = current.energy
+                setenergy = current.energy
                 energy = current.energy
-                update_setenergy(setenrgy)
+                update_setenergy(current.energy)
                 update_level(current.level)
                 
                 document.getElementsByClassName("energy")[0].innerText = energy + '/' + setenrgy
