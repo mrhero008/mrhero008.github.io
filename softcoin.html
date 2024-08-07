@@ -278,7 +278,7 @@
             level = levels[key].level
             setenrgy = levels[key].energy
             if (last_level != level) {
-                console.log(current)
+                current = levels[level_up[level - 1]]
 
                 const level_up_div = document.createElement("div");
                 level_up_div.classList.add("level-up");
