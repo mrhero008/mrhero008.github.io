@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SoftCoin</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../static/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <script src="https://kit.fontawesome.com/c361bc11c8.js" crossorigin="anonymous"></script>
@@ -15,7 +15,7 @@
     <div id="home-tab">
         <div class="level">
             <p>Darajangiz: </p>
-            <p><img id="level" src="level1.png" height="100px" alt=""></p>
+            <p><img id="level" src="../static/level1.png" height="100px" alt=""></p>
         </div>
         <div class="balance">
             <div class="icon-coin-back">
@@ -28,63 +28,110 @@
                 <div class="coin">S</div>
             </div>
         </div>
+        <p style="text-align: left;padding-left: 20px">Keyingi daraja: </p>
+        <div class="progress">
+            <div class="progress-bar"></div>
+        </div>
         <p class="energy">100/100</p>
     </div>
-    <div id="messages-tab">
-        <div class="message">
-            <div class="text"></div>
+    <div id="messages-tab" style="display: none;">
 
-        </div>
     </div>
+
+    <div style="height: 100px"></div>
+
     <div class="menu">
         <i class="fa fa-home active" id="home"></i>
-        <i class='fas fa-comment-dots' id="messages"></i>
+        <i class='fas fa-tasks' id="messages"></i>
     </div>
-    <script src="supabase.js"></script>
+    <script src="../static/supabase.js"></script>
 
     <script>
-        const url = 'https://zdelswetcocypedqkqwm.supabase.co'
-        const key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpkZWxzd2V0Y29jeXBlZHFrcXdtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjI1Njk4NTcsImV4cCI6MjAzODE0NTg1N30.c-oWVYU3I5ZYlpP1-m-uGPIEKn0PAyF4m9TKmKfKPUM'
+        const url = new URLSearchParams(window.location.search).get('url')
+        const key = new URLSearchParams(window.location.search).get('key')
+        const delay = time => new Promise(resolve => setTimeout(resolve, time))
+        
+        
         const _supabase = supabase.createClient(url, key)
         const user_id = new URLSearchParams(window.location.search).get('user_id')
+        const tg = window.Telegram.WebApp
+        tg.expand()
         const levels = {
             1: {
                 level: 1,
                 energy: 100,
-                avatar: 'level1.png'
+                avatar: '../static/level1.png',
+                add_coin: 1
             },
             1000: {
                 level: 2,
                 energy: 200,
-                avatar: 'level2.png'
+                avatar: '../static/level2.png',
+                add_coin: 5
             },
             10000: {
                 level: 3,
                 energy: 300,
-                avatar: 'level3.png'
+                avatar: '../static/level3.png',
+                add_coin: 12
             },
             50000: {
                 level: 4,
                 energy: 400,
-                avatar: 'level4.png'
+                avatar: '../static/level4.png',
+                add_coin: 20
             },
             100000: {
                 level: 5,
                 energy: 500,
-                avatar: 'level5.png'
+                avatar: '../static/level5.png',
+                add_coin: 36
             },
             1000000: {
                 level: 6,
                 energy: 600,
-                avatar: 'level6.png'
+                avatar: '../static/level6.png',
+                add_coin: 52
             },
             10000000: {
                 level: 7,
                 energy: 700,
-                avatar: 'level7.png'
+                avatar: '../static/level7.png',
+                add_coin: 74
             }
         }
         const level_up = Object.keys(levels)
+
+        async function get_tasks() {
+            const { data } = await _supabase.from('tasks').select('*')
+            return data
+        }
+
+
+        async function set_timer(task_id, time) {
+            const data = await _supabase.from('timer').insert({ user: user_id, task: task_id, time: time })
+            return data
+        }
+
+
+
+        async function get_timer(task_id) {
+            const { data } = await _supabase.from('timer').select('*').match({ user: user_id, task: task_id })
+            return data
+        }
+
+
+        async function completed(task_id) {
+            const { data } = await _supabase.from('complete').select('user, task').match({ user: user_id, task: task_id })
+            return data
+        }
+
+
+        async function set_completed(task_id) {
+            const data = await _supabase.from('complete').update({ taken: true }).match({ user: user_id, task: task_id })
+            return data
+        }
+
         async function main() {
             const { data } = await _supabase.from('users').select('*').eq('user_id', user_id).single()
             return data
@@ -104,57 +151,97 @@
             return data
         }
 
+        async function get_this_task(task_id) {
+            const { data } = await _supabase.from('tasks').select('*').eq('id', task_id).single()
+            return data
+        }
+
+
+        async function delete_timer(task_id) {
+            const { data } = await _supabase.from('timer').delete().match({ user: user_id, task: task_id })
+            return data
+        }
+
         let balance
         let setenrgy
         let energy
         let level
+        let next_level
+        let add_coin
+        let last_level
 
         main().then(data => {
             balance = data.balance
             if (balance >= 1000 && balance < 1000000) {
                 if (String(balance / 1000).split('.').length == 1 || String(balance / 1000).split('.')[1][0] == 0) {
-                    document.getElementById("balance").innerText = String(balance / 1000).split('.')[0] + ' ming'
+                    document.getElementById("balance").innerText = String(balance / 1000).split('.')[0] + 'k'
                 } else {
-                    document.getElementById("balance").innerText = String(balance / 1000).split('.')[0] + ',' + String(balance / 1000).split('.')[1][0] + ' ming'
+                    document.getElementById("balance").innerText = String(balance / 1000).split('.')[0] + ',' + String(balance / 1000).split('.')[1][0] + 'k'
                 }
             } else if (balance >= 1000000) {
                 if (String(balance / 1000000).split('.').length == 1 || String(balance / 1000000).split('.')[1][0] == 0) {
-                    document.getElementById("balance").innerText = String(balance / 1000000).split('.')[0] + ' ming'
+                    document.getElementById("balance").innerText = String(balance / 1000000).split('.')[0] + 'mln'
                 } else {
-                    document.getElementById("balance").innerText = String(balance / 1000000).split('.')[0] + ',' + String(balance / 1000000).split('.')[1][0] + ' ming'
+                    document.getElementById("balance").innerText = String(balance / 1000000).split('.')[0] + ',' + String(balance / 1000000).split('.')[1][0] + 'mln'
                 }
-                document.getElementById("balance").innerText = String(balance / 1000000).split('.')[0] + ' mln'
             } else {
                 document.getElementById("balance").innerText = balance
             }
-            setenrgy = data.setenergy
-            energy = data.setenergy
-            level = data.level
-            document.getElementsByClassName("energy")[0].innerText = navigator.userAgent + energy + '/' + setenrgy
+            let key
+            level_up.forEach((value, index) => {
+                if (value < balance) {
+                    key = value
+                }
+            })
+            level = levels[key].level
+            setenrgy = levels[key].energy
+            energy = levels[key].energy
+            last_level = level
+            document.getElementsByClassName("energy")[0].innerText = energy + '/' + setenrgy
             document.getElementById("level").src = levels[level_up[level - 1]].avatar
+
+
+            add_coin = levels[level_up[level - 1]].add_coin
+            <!-- progress bar -->
+
+            next_level = level_up[level]
+
+            document.querySelector(".progress-bar").style.width = balance / next_level * 100 + '%'
         })
+
+
         document.getElementById("button").onclick = function (event) {
             if (energy <= 0) {
                 return
             }
             let x = event.clientX;
             let y = event.clientY;
-            balance++
+            balance += add_coin
+            const newd = document.createElement("div");
+            newd.style.position = 'fixed'
+            newd.style.display = 'flex'
+            newd.style.flexDirection = 'row'
+            newd.style.pointerEvents = 'none'
+            const p = document.createElement("p");
+            p.style.margin = '0'
+            p.innerText = '+' + add_coin
             const small = document.createElement("div");
             small.classList.add("small-coin-back");
             const c = document.createElement("div");
             c.classList.add("small-coin");
             c.innerText = 'S'
             small.appendChild(c);
-            document.getElementsByTagName("body")[0].appendChild(small);
-            small.style.left = x + 'px';
-            small.style.top = y + 'px';
+            newd.appendChild(p);
+            newd.appendChild(small);
+            document.getElementsByTagName("body")[0].appendChild(newd);
+            newd.style.left = x + 'px';
+            newd.style.top = y + 'px';
             for (let i = 0; i < 100; i++) {
                 setTimeout(function () {
-                    small.style.top = y - i * 3 + 'px';
-                    small.style.opacity = 1 - i / 100;
+                    newd.style.top = y - i * 3 + 'px';
+                    newd.style.opacity = 1 - i / 100;
                     if (i == 99) {
-                        small.remove();
+                        newd.remove();
                     }
                 }, i * 10);
             }
@@ -162,23 +249,30 @@
             document.getElementsByClassName("energy")[0].innerText = energy + '/' + setenrgy
             if (balance >= 1000 && balance < 1000000) {
                 if (String(balance / 1000).split('.').length == 1 || String(balance / 1000).split('.')[1][0] == 0) {
-                    document.getElementById("balance").innerText = String(balance / 1000).split('.')[0] + ' ming'
+                    document.getElementById("balance").innerText = String(balance / 1000).split('.')[0] + 'k'
                 } else {
-                    document.getElementById("balance").innerText = String(balance / 1000).split('.')[0] + ',' + String(balance / 1000).split('.')[1][0] + ' ming'
+                    document.getElementById("balance").innerText = String(balance / 1000).split('.')[0] + ',' + String(balance / 1000).split('.')[1][0] + 'k'
                 }
             } else if (balance >= 1000000) {
                 if (String(balance / 1000000).split('.').length == 1 || String(balance / 1000000).split('.')[1][0] == 0) {
-                    document.getElementById("balance").innerText = String(balance / 1000000).split('.')[0] + ' ming'
+                    document.getElementById("balance").innerText = String(balance / 1000000).split('.')[0] + 'mln'
                 } else {
-                    document.getElementById("balance").innerText = String(balance / 1000000).split('.')[0] + ',' + String(balance / 1000000).split('.')[1][0] + ' ming'
+                    document.getElementById("balance").innerText = String(balance / 1000000).split('.')[0] + ',' + String(balance / 1000000).split('.')[1][0] + 'mln'
                 }
-                document.getElementById("balance").innerText = String(balance / 1000000).split('.')[0] + ' mln'
             } else {
                 document.getElementById("balance").innerText = balance
             }
             update_balance(balance)
-            if (level_up.includes(String(balance)) && levels[balance].level != 1) {
-                const current = levels[balance]
+            let key
+            level_up.forEach((value, index) => {
+                if (value < balance) {
+                    key = value
+                }
+            })
+            level = levels[key].level
+            setenrgy = levels[key].energy
+            if (last_level != level) {
+                console.log(current)
 
                 const level_up_div = document.createElement("div");
                 level_up_div.classList.add("level-up");
@@ -202,15 +296,19 @@
                         }
                     }, i * 10);
                 }
-                setenergy = current.energy
-                energy = current.energy
-                level = current.level
                 document.getElementById("level").src = current.avatar
                 update_setenergy(current.energy)
                 update_level(current.level)
 
-                document.getElementsByClassName("energy")[0].innerText = navigator.userAgent +  energy + '/' + setenrgy
+                document.getElementsByClassName("energy")[0].innerText = energy + '/' + setenrgy
             }
+
+
+
+            next_level = level_up[level]
+
+            document.querySelector(".progress-bar").style.width = balance / next_level * 100 + '%'
+            last_level = level
 
         }
 
@@ -240,7 +338,182 @@
             document.getElementById('messages').classList.add('active')
             document.getElementById('home-tab').style.display = 'none'
             document.getElementById('messages-tab').style.display = 'block'
+            get_tasks().then((data) => {
+                document.getElementById("messages-tab").innerHTML = ''
+                if (data.length > 0) {
+                    for (let i = 0; i < data.length; i++) {
+                        let task = data[i]
+                        let rew
+                        get_timer(task.id).then((d) => completed(task.id).then((c) => {
+                            let now = new Date()
+                            let time
+                            try {
+                                time = now.getTime() - Number(d[0].time)
+                            } catch (e) {
+                            }
+                            if (task.reward >= 1000 && task.reward < 1000000) {
+                                if (String(task.reward / 1000).split('.').length == 1 || String(task.reward / 1000).split('.')[1][0] == 0) {
+                                    rew = String(task.reward / 1000).split('.')[0] + 'k'
+                                } else {
+                                    rew = String(task.reward / 1000).split('.')[0] + ',' + String(task.reward / 1000).split('.')[1][0] + 'k'
+                                }
+                            } else if (task.reward >= 1000000) {
+                                if (String(task.reward / 1000000).split('.').length == 1 || String(task.reward / 1000000).split('.')[1][0] == 0) {
+                                    rew = String(task.reward / 1000000).split('.')[0] + 'mln'
+                                } else {
+                                    rew = String(task.reward / 1000000).split('.')[0] + ',' + String(task.reward / 1000000).split('.')[1][0] + 'mln'
+                                }
+                            } else {
+                                rew = task.reward
+                            }
+
+                            let taken
+                            try {
+                                taken = c[0].taken
+                            } catch (e) {
+
+                            }
+
+                            if (c.length > 0 || taken == true) {
+                                return
+                            }
+                            if (d.length == 0) {
+                                document.getElementById("messages-tab").innerHTML += `
+                                    <div class="message" id="task-${task.id}" onclick="do_task(${task.id})">
+                                        <div class="text">${task.task}</div>
+                                        <div class="reward">
+                                            <div class="reward-coin-back">
+                                                <div class="reward-coin">S</div>
+                                            </div>
+                                            <p style='padding: 0;margin: 0;font-size: 20px;padding-top: 2px;padding-left: 7px'>+${rew}</p>
+                                        </div>
+                                    </div>
+                                `
+                            } else if (time / 1000 >= 60 * 30) {
+                                document.getElementById("messages-tab").innerHTML += `
+                                    <div class="message" id="task-${task.id}" onclick="get_reward(${task.id})">
+                                        <div class="text">${task.task}</div>
+                                        <div class="reward">
+                                            <div class="reward-coin-back">
+                                                <div class="reward-coin">S</div>
+                                            </div>
+                                            <p style='padding: 0;margin: 0;font-size: 20px;padding-top: 2px;padding-left: 7px'>+${rew}</p>
+                                            <div class='time' style='text-align: center;background-color: rgb(57 172 17)'>
+                                                Tayyor
+                                            </div>
+                                        </div>
+                                    </div>
+                                `
+                            } else if (time / 1000 < 60 * 30) {
+                                document.getElementById("messages-tab").innerHTML += `
+                                    <div class="message" id="task-${task.id}"">
+                                        <div class="text">${task.task}</div>
+                                        <div class="reward">
+                                            <div class="reward-coin-back">
+                                                <div class="reward-coin">S</div>
+                                            </div>
+                                            <p style='padding: 0;margin: 0;font-size: 20px;padding-top: 2px;padding-left: 7px'>+${rew}</p>
+                                            <div class='time' style='text-align: center;'>
+                                                ${Math.floor(Number((30 * 60 * 1000 - time) / 1000 / 60)).toString().padStart(2, '0')}:${((30 * 60 * 1000 - time) / 1000 % 60).toString().split('.')[0].padStart(2, '0')}
+                                            </div>
+                                        </div>
+                                    </div>
+                                `
+                                const interval = setInterval(() => {
+                                    const now = new Date()
+                                    time = 30 * 60 * 1000 - now.getTime() + Number(d[0].time)
+                                    if (time <= 0) {
+                                        document.getElementById("task-" + task.id).querySelector('.time').style.backgroundColor = 'rgb(57 172 17)'
+                                        document.getElementById("task-" + task.id).querySelector('.time').innerText = 'Tayyor'
+                                        document.getElementById("task-" + task.id).setAttribute('onclick', 'get_reward(' + task.id + ')')
+                                        tg.sendData(JSON.stringify({
+                                            id: id,
+                                            url: data.url,
+                                            chatid: data.chatid
+
+                                        }))
+                                        clearInterval(interval)
+                                    }
+                                    document.getElementById("task-" + task.id).querySelector('.time').innerText = `${Math.floor(Number(time / 1000 / 60)).toString().padStart(2, '0')}:${(time / 1000 % 60).toString().split('.')[0].padStart(2, '0')}`
+                                }, 1000)
+                            }
+                        }))
+                    }
+                }
+            })
         })
+
+
+
+        function do_task(id) {
+            get_this_task(id).then(async (data) => {
+                if (data.url.startsWith('https://t.me/')) {
+                    tg.openTelegramLink(data.url)
+                } else if (data.url.startsWith('https://youtube.com')) {
+                    tg.openLink(data.url)
+                }
+                const time = document.createElement('div')
+                time.classList.add('time')
+                const now = new Date()
+                document.getElementById('task-' + id).querySelector('.reward').appendChild(time)
+                document.getElementById('task-' + id).removeAttribute('onclick')
+                set_timer(id, now.getTime()).then((d) => {
+                })
+
+
+                for (let i = 60 * 30; i > 0; i--) {
+                    let t = `${Number(i / 60).toString().split('.')[0].padStart(2, '0')}:${(i % 60).toString().padStart(2, '0')}`
+                    time.innerText = t
+                    await delay(1000)
+                    await new Promise(r => setTimeout(r, 1000))
+                }
+
+
+                time.style.backgroundColor = 'rgb(57 172 17)'
+                time.innerText = 'Tayyor'
+                document.getElementById('task-' + id).setAttribute('onclick', 'get_reward(' + id + ')')
+            })
+        }
+
+
+
+        function get_reward(id) {
+            completed(id).then((d) => {
+                if (d.length == 0) {
+                    delete_timer(id)
+                    console.log(id)
+                    let err = `
+                    <p id="error">
+                        Topshiriq bajarilmagan
+                    </p>
+                    `
+
+                    document.querySelector('body').innerHTML += err
+
+                    err = document.querySelector('#error')
+
+                    for (let i = 0; i < 200; i++) {
+                        delay(5 * i).then(() => {
+                            err.style.top = 370 - i + 'px'
+                            err.style.opacity = 1 - i / 200
+                            if (i === 199) {
+                                err.remove()
+                            }
+                        })
+                    }
+                    document.getElementById('task-' + id).setAttribute('onclick', 'do_task(' + id + ')')
+                    document.getElementById('task-' + id).querySelector('.time').remove()
+                    return
+                }
+                document.getElementById('task-' + id).remove()
+                get_this_task(id).then((data) => {
+                    balance += data.reward
+                    document.getElementById('balance').innerText = balance
+                })
+                set_completed(id)
+            })
+
+        }
     </script>
 </body>
 
