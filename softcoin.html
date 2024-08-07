@@ -56,10 +56,10 @@
         const user_id = new URLSearchParams(window.location.search).get('user_id')
         let tg
         try {
-
-        } catch (e) {
             const tg = window.Telegram.WebApp
             tg.expand()
+        } catch (e) {
+            
         }
         const levels = {
             1: {
