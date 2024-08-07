@@ -54,8 +54,13 @@
         
         const _supabase = supabase.createClient(url, key)
         const user_id = new URLSearchParams(window.location.search).get('user_id')
-        const tg = window.Telegram.WebApp
-        tg.expand()
+        let tg
+        try {
+
+        } catch (e) {
+            const tg = window.Telegram.WebApp
+            tg.expand()
+        }
         const levels = {
             1: {
                 level: 1,
