@@ -33,6 +33,7 @@
             <div class="progress-bar"></div>
         </div>
         <p class="energy">100/100</p>
+        <div id="err"></div>
     </div>
     <div id="messages-tab" style="display: none;">
 
@@ -453,31 +454,35 @@
 
         function do_task(id) {
             get_this_task(id).then(async (data) => {
-                if (data.url.startsWith('https://t.me/')) {
-                    tg.openTelegramLink(data.url)
-                } else if (data.url.startsWith('https://youtube.com')) {
-                    tg.openLink(data.url)
+                try {
+                    if (data.url.startsWith('https://t.me/')) {
+                        tg.openTelegramLink(data.url)
+                    } else if (data.url.startsWith('https://youtube.com')) {
+                        tg.openLink(data.url)
+                    }
+                    const time = document.createElement('div')
+                    time.classList.add('time')
+                    const now = new Date()
+                    document.getElementById('task-' + id).querySelector('.reward').appendChild(time)
+                    document.getElementById('task-' + id).removeAttribute('onclick')
+                    set_timer(id, now.getTime()).then((d) => {
+                    })
+
+
+                    for (let i = 60 * 30; i > 0; i--) {
+                        let t = `${Number(i / 60).toString().split('.')[0].padStart(2, '0')}:${(i % 60).toString().padStart(2, '0')}`
+                        time.innerText = t
+                        await delay(1000)
+                        await new Promise(r => setTimeout(r, 1000))
+                    }
+
+
+                    time.style.backgroundColor = 'rgb(57 172 17)'
+                    time.innerText = 'Tayyor'
+                    document.getElementById('task-' + id).setAttribute('onclick', 'get_reward(' + id + ')')
+                } catch(e) {
+                    document.getElementById('err').innertext = e
                 }
-                const time = document.createElement('div')
-                time.classList.add('time')
-                const now = new Date()
-                document.getElementById('task-' + id).querySelector('.reward').appendChild(time)
-                document.getElementById('task-' + id).removeAttribute('onclick')
-                set_timer(id, now.getTime()).then((d) => {
-                })
-
-
-                for (let i = 60 * 30; i > 0; i--) {
-                    let t = `${Number(i / 60).toString().split('.')[0].padStart(2, '0')}:${(i % 60).toString().padStart(2, '0')}`
-                    time.innerText = t
-                    await delay(1000)
-                    await new Promise(r => setTimeout(r, 1000))
-                }
-
-
-                time.style.backgroundColor = 'rgb(57 172 17)'
-                time.innerText = 'Tayyor'
-                document.getElementById('task-' + id).setAttribute('onclick', 'get_reward(' + id + ')')
             })
         }
 
