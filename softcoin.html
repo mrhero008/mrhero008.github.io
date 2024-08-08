@@ -481,7 +481,8 @@
                     time.innerText = 'Tayyor'
                     document.getElementById('task-' + id).setAttribute('onclick', 'get_reward(' + id + ')')
                 } catch(e) {
-                    document.getElementById('err').innertext = e
+                    console.log(e)
+                    document.getElementById('err').innerText = e
                 }
             })
         }
