@@ -97,6 +97,7 @@ body {
     color: aliceblue;
     user-select: none;
     overflow-x: hidden;
+    scale: 0.6;
 }
 
 .center {
